@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>💕 Valentine's Day</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Pacifico&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    min-height: 100vh;
+    background: #1a0a1e;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    font-family: 'Playfair Display', serif;
+    position: relative;
+  }
+
+  /* Ambient background glow */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 700px; height: 700px;
+    background: radial-gradient(circle, rgba(200,50,100,0.18) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Floating hearts background */
+  .hearts-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+  .heart-float {
+    position: absolute;
+    opacity: 0;
+    animation: floatUp linear infinite;
+    font-size: 1.4rem;
+    filter: drop-shadow(0 0 6px rgba(220,80,120,0.5));
+  }
+  @keyframes floatUp {
+    0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+    10% { opacity: 0.6; }
+    90% { opacity: 0.4; }
+    100% { transform: translateY(-120px) rotate(360deg); opacity: 0; }
+  }
+
+  /* Main card */
+  .card {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 50px 40px 40px;
+    background: linear-gradient(145deg, rgba(40,15,35,0.85), rgba(25,8,22,0.9));
+    border: 1px solid rgba(220,80,120,0.25);
+    border-radius: 28px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
+    max-width: 480px;
+    width: 90%;
+    backdrop-filter: blur(4px);
+  }
+
+  .big-heart {
+    font-size: 3.2rem;
+    display: block;
+    margin-bottom: 18px;
+    animation: pulse 1.4s ease-in-out infinite;
+    filter: drop-shadow(0 0 12px rgba(220,80,120,0.7));
+  }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.18); }
+  }
+
+  .question {
+    font-family: 'Pacifico', cursive;
+    color: #f0c4d4;
+    font-size: 1.85rem;
+    line-height: 1.4;
+    margin-bottom: 10px;
+    text-shadow: 0 0 20px rgba(220,80,120,0.3);
+  }
+  .question .name { color: #ff7aaa; font-size: 2.1rem; }
+
+  .sub {
+    color: rgba(240,196,212,0.5);
+    font-style: italic;
+    font-size: 0.95rem;
+    margin-bottom: 36px;
+  }
+
+  /* Buttons container */
+  .buttons {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    position: relative;
+    min-height: 60px;
+    align-items: center;
+  }
+
+  .btn {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 50px;
+    padding: 14px 38px;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.2s;
+    position: relative;
+    z-index: 2;
+    letter-spacing: 0.5px;
+  }
+
+  .btn-yes {
+    background: linear-gradient(135deg, #e84393, #d63384);
+    color: #fff;
+    box-shadow: 0 6px 24px rgba(232,67,147,0.45);
+  }
+  .btn-yes:hover { transform: scale(1.08); box-shadow: 0 8px 30px rgba(232,67,147,0.6); }
+  .btn-yes:active { transform: scale(0.96); }
+
+  .btn-no {
+    background: linear-gradient(135deg, #4a2040, #3d1a35);
+    color: rgba(240,196,212,0.7);
+    box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+    position: absolute;
+    /* starts next to yes */
+    left: calc(50% + 70px);
+    top: 50%;
+    transform: translateY(-50%);
+    user-select: none;
+  }
+  .btn-no:hover { /* no hover effect — it runs! */ }
+
+  /* Yes celebration screen */
+  .celebrate {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    animation: fadeIn 0.6s ease;
+  }
+  .celebrate.show { display: flex; }
+  @keyframes fadeIn { from { opacity: 0; transform: scale(0.85); } to { opacity: 1; transform: scale(1); } }
+
+  .celebrate-heart { font-size: 4rem; animation: pulse 1s ease-in-out infinite; filter: drop-shadow(0 0 16px rgba(220,80,120,0.8)); }
+  .celebrate-text {
+    font-family: 'Pacifico', cursive;
+    color: #ff7aaa;
+    font-size: 2rem;
+    text-shadow: 0 0 24px rgba(220,80,120,0.5);
+  }
+  .celebrate-sub { color: rgba(240,196,212,0.6); font-style: italic; font-size: 1rem; }
+
+  /* Confetti */
+  .confetti-piece {
+    position: fixed;
+    top: -20px;
+    width: 10px; height: 10px;
+    border-radius: 2px;
+    pointer-events: none;
+    z-index: 100;
+    animation: confettiFall linear forwards;
+  }
+  @keyframes confettiFall {
+    0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  }
+
+  /* Attempts counter (subtle) */
+  .attempts {
+    color: rgba(240,196,212,0.3);
+    font-size: 0.75rem;
+    font-style: italic;
+    margin-top: 24px;
+    min-height: 18px;
+  }
+</style>
+</head>
+<body>
+
+<div class="hearts-bg" id="heartsBg"></div>
+
+<div class="card" id="mainCard">
+  <span class="big-heart">💝</span>
+  <div class="question" id="questionArea">
+    <span class="name" id="girlName">Avishi</span><br>
+    Will you be my Valentine?
+  </div>
+  <p class="sub">Choose wisely… 😉</p>
+
+  <div class="buttons" id="buttonsArea">
+    <button class="btn btn-yes" id="yesBtn" onclick="onYes()">Yes 💕</button>
+    <button class="btn btn-no" id="noBtn" onmouseenter="runAway(event)" onclick="runAway(event)">No</button>
+  </div>
+
+  <div class="celebrate" id="celebrateBox">
+    <span class="celebrate-heart">💘</span>
+    <div class="celebrate-text">Yay! 🎉</div>
+    <div class="celebrate-sub" id="celebSub">She said Yes!</div>
+  </div>
+
+  <div class="attempts" id="attemptsText"></div>
+</div>
+
+<script>
+  // ──── CUSTOMIZE HERE ────
+  const GIRL_NAME = "Avishi"; // ← change this!
+  // ─────────────────────────
+
+  let attempts = 0;
+
+  // Set name
+  document.getElementById('girlName').textContent = GIRL_NAME;
+  document.getElementById('celebSub').textContent = GIRL_NAME + ' said Yes! 💕';
+
+  // ── Floating hearts background ──
+  const heartsBg = document.getElementById('heartsBg');
+  const heartEmojis = ['💕','💗','💓','💖','💘','♥️','❣️'];
+  for (let i = 0; i < 28; i++) {
+    const h = document.createElement('div');
+    h.className = 'heart-float';
+    h.textContent = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
+    h.style.left = Math.random() * 100 + '%';
+    h.style.animationDuration = (6 + Math.random() * 10) + 's';
+    h.style.animationDelay = (Math.random() * 12) + 's';
+    h.style.fontSize = (0.8 + Math.random() * 1.4) + 'rem';
+    heartsBg.appendChild(h);
+  }
+
+  // ── No button escape logic ──
+  function runAway(e) {
+    e.preventDefault();
+    attempts++;
+    updateAttempts();
+
+    const noBtn = document.getElementById('noBtn');
+    const container = document.getElementById('buttonsArea');
+    const rect = container.getBoundingClientRect();
+    const w = rect.width;
+    const h = rect.height;
+
+    // Pick a random position away from current
+    let newLeft, newTop;
+    for (let i = 0; i < 10; i++) {
+      newLeft = (Math.random() * (w - 80)) - 40;
+      newTop  = (Math.random() * (h + 40)) - 20;
+      // make sure it's not too close to center (where Yes is)
+      if (Math.abs(newLeft - w/2) > 80 || Math.abs(newTop) > 30) break;
+    }
+
+    // Occasionally jump outside the card area using viewport coords
+    if (Math.random() < 0.35) {
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const cardRect = document.getElementById('mainCard').getBoundingClientRect();
+      // random edge of viewport
+      const edge = Math.floor(Math.random() * 4);
+      let absX, absY;
+      if (edge === 0) { absX = Math.random() * vw; absY = 10 + Math.random() * 60; }
+      else if (edge === 1) { absX = vw - 70 - Math.random() * 60; absY = Math.random() * vh; }
+      else if (edge === 2) { absX = Math.random() * vw; absY = vh - 60 - Math.random() * 60; }
+      else { absX = 10 + Math.random() * 60; absY = Math.random() * vh; }
+
+      // Convert to relative inside buttonsArea
+      newLeft = absX - rect.left;
+      newTop  = absY - rect.top;
+    }
+
+    noBtn.style.transition = 'left 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94), top 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+    noBtn.style.left  = newLeft + 'px';
+    noBtn.style.top   = newTop  + 'px';
+    noBtn.style.transform = 'translateY(0)';
+
+    // Shrink No button slightly over time (max 5 shrinks)
+    const scale = Math.max(0.5, 1 - attempts * 0.07);
+    noBtn.style.transform += ` scale(${scale})`;
+  }
+
+  function updateAttempts() {
+    const msgs = [
+      "Hmm… are you sure? 😏",
+      "Come on… 😉",
+      "That button is shy!",
+      "It doesn't want to be clicked…",
+      "Maybe take the hint? 💕",
+      "The No button is running away!",
+      "You can't catch it… 😄",
+      "Just click Yes already! 💝",
+      "It's getting smaller… hint hint 😘",
+      "There's only one way this ends…"
+    ];
+    const idx = Math.min(attempts - 1, msgs.length - 1);
+    document.getElementById('attemptsText').textContent = msgs[idx];
+  }
+
+  // ── Yes button ──
+  function onYes() {
+    document.getElementById('questionArea').style.display = 'none';
+    document.getElementById('buttonsArea').style.display = 'none';
+    document.getElementById('attemptsText').style.display = 'none';
+    document.querySelector('.sub').style.display = 'none';
+    document.getElementById('celebrateBox').classList.add('show');
+    launchConfetti();
+  }
+
+  // ── Confetti burst ──
+  function launchConfetti() {
+    const colors = ['#e84393','#fd79a8','#fab1d3','#ff7aaa','#d63384','#ff6b9d','#fff0f3','#c94277'];
+    for (let i = 0; i < 80; i++) {
+      const piece = document.createElement('div');
+      piece.className = 'confetti-piece';
+      piece.style.left = (Math.random() * 100) + 'vw';
+      piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+      piece.style.animationDuration = (1.8 + Math.random() * 2) + 's';
+      piece.style.animationDelay = (Math.random() * 0.6) + 's';
+      piece.style.width = (6 + Math.random() * 8) + 'px';
+      piece.style.height = (6 + Math.random() * 8) + 'px';
+      piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+      document.body.appendChild(piece);
+      setTimeout(() => piece.remove(), 4000);
+    }
+  }
+
+  // Touch support for mobile — prevent No from being tappable
+  document.getElementById('noBtn').addEventListener('touchstart', function(e) {
+    e.preventDefault();
+    runAway(e);
+  }, { passive: false });
+
+</script>
+</body>
+</html>
